@@ -1,0 +1,25 @@
+# Secrets & Environment
+.env
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# macOS metadata
+.DS_Store
+._*
+
+# SQLite WAL/SHM runtime locks (keep db/print_lab.sqlite tracked!)
+db/*.sqlite-shm
+db/*.sqlite-wal
+
+# Heavy image packs & generated outputs (transferred via Print_Lab_Assets_Pack over AirDrop / SSD)
+Print_Lab_Assets_Pack/
+assets_pack/
+assets/
+output/
+uploads/

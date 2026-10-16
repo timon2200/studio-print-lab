@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="hr" data-theme="dark" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Studio Varaždin · Print Studio & Vector Lab</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/studio.css?v=2.4.0">
+  <link rel="stylesheet" href="css/canvas.css?v=2.4.0">
+</head>
+<body>
+
+  <!-- Top Real-Time Progress Bar -->
+  <div id="topProgressBar" class="top-progress-bar"></div>
+
+  <!-- Toast Notification Stack -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Film Grain Atmosphere Overlay -->
+  <canvas id="grainCanvas" class="grain-canvas"></canvas>
+
+  <div class="app-layout">
+    
+    <!-- Top Header HUD -->
+    <header class="app-header">
+      <div class="brand-section">
+        <a href="#" class="brand-sigil">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+          </svg>
+          <span>STUDIO VARAŽDIN</span>
+        </a>
+        <span class="brand-badge">PRINT LAB & DTF MASTER</span>
+      </div>
+
+      <!-- Navigation View Switcher -->
+      <div class="view-nav" role="tablist">
+        <button id="btnNavCatalog" class="view-btn active" data-view="catalog">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>KATALOG</span>
+        </button>
+        <button id="btnNavEditor" class="view-btn" data-view="editor">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>RADIONICA</span>
+        </button>
+      </div>
+
+      <!-- Header Right Telemetry & Actions -->
+      <div class="header-actions">
+        <div class="telemetry-chip" title="Podaci iz Swiper špila uživo">
+          <span class="pulse-dot"></span>
+          <span>GLASOVA: <strong id="telemetryVoteCount" style="color:var(--accent-gold-bright);">2.254</strong></span>
+        </div>
+
+        <button id="btnUploadHeader" class="btn-secondary btn-tool-gold" title="Uvezi vlastitu sliku ili predložak">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span>UVEZI SLIKU</span>
+        </button>
+        <input type="file" id="fileUploadInput" accept="image/png,image/jpeg,image/webp" style="display:none;">
+      </div>
+    </header>
+
+    <!-- Main Workspace Content -->
+    <main class="main-content">
+      
+      <!-- ================================================================= -->
+      <!-- VIEW 1: CATALOG & POPULARITY EXPLORER (SWIPER KUSTOSKI SUITE)     -->
+      <!-- ================================================================= -->
+      <section id="viewCatalog" class="view-panel catalog-view active">
+        
+        <!-- Secondary Toolbar: Filters, Search & Bulk Tools -->
+        <div class="admin-toolbar">
+          <!-- Category Filter Pills -->
+          <nav class="category-nav" id="categoryNav" aria-label="Filter kategorija">
+            <button class="cat-pill active" data-cat="ALL">SVE <span class="cat-badge" id="badgeAll">0</span></button>
+            <button class="cat-pill" data-cat="City">CITY <span class="cat-badge" id="badgeCity">0</span></button>
+            <button class="cat-pill" data-cat="Studio">STUDIO <span class="cat-badge" id="badgeStudio">0</span></button>
+            <button class="cat-pill" data-cat="Creative">CREATIVE <span class="cat-badge" id="badgeCreative">0</span></button>
+            <button class="cat-pill" data-cat="Garda">GARDA <span class="cat-badge" id="badgeGarda">0</span></button>
+            <button class="cat-pill" data-cat="Towers">TOWERS <span class="cat-badge" id="badgeTowers">0</span></button>
+            <button class="cat-pill" data-cat="Utility">UTILITY <span class="cat-badge" id="badgeUtility">0</span></button>
+            <button class="cat-pill" data-cat="Artwear">ARTWEAR <span class="cat-badge" id="badgeArtwear">0</span></button>
+            <button class="cat-pill" data-cat="Front Hits">FRONT HITS <span class="cat-badge" id="badgeFrontHits">0</span></button>
+            <button class="cat-pill" data-cat="Experimental">EXPERIMENTAL <span class="cat-badge" id="badgeExperimental">0</span></button>
+            <button class="cat-pill" data-cat="Korisnički uvoz" id="pillUploads" style="display:none;">UVOZ <span class="cat-badge" id="badgeUploads">0</span></button>
+          </nav>
+
+          <!-- Sort & Vote Filter Controls -->
+          <div class="admin-sort-bar">
+            <div class="sort-group">
+              <label for="adminSortSelect" class="admin-sort-label">POREDAJ PO:</label>
+              <select id="adminSortSelect" class="admin-select">
+                <option value="score-desc" selected>🏆 NAJVIŠE BODOVA (SKOR)</option>
+                <option value="default">⚡ ZADANI REDOSLIJED</option>
+                <option value="likes-desc">♥ NAJVIŠE LAJKOVA</option>
+                <option value="super-desc">★ NAJVIŠE SUPERLIKE</option>
+                <option value="votes-desc">📊 UKUPNO GLASOVA</option>
+                <option value="approval-desc">📈 NAJVEĆE ODOBRAVANJE (%)</option>
+                <option value="title-asc">🔤 NAZIV (A-Z)</option>
+              </select>
+            </div>
+
+            <div class="vote-filter-group" id="adminVoteFilterGroup">
+              <button class="vote-pill active" data-votefilter="all">SVI</button>
+              <button class="vote-pill" data-votefilter="voted">S GLASOVIMA (>0)</button>
+              <button class="vote-pill" data-votefilter="top20">TOP 20 PO BODOVIMA</button>
+              <button class="vote-pill" data-votefilter="top50">TOP 50 PO BODOVIMA</button>
+              <button class="vote-pill" data-votefilter="unvoted">BEZ GLASOVA (0)</button>
+            </div>
+          </div>
+
+          <!-- Toolbelt -->
+          <div class="toolbelt">
+            <div class="search-box">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input type="text" id="searchInput" placeholder="Filtriraj majice po nazivu..." autocomplete="off">
+              <button id="searchClear" class="search-clear" style="display:none;" title="Očisti pretragu">&times;</button>
+            </div>
+
+            <div class="bulk-actions">
+              <!-- Finalist Quick Picks -->
+              <button id="btnTop20" class="btn-tool btn-tool-gold" title="Prikaži samo Top 20 po bodovima">
+                <span>🏆 Top 20</span>
+              </button>
+              <button id="btnTop30" class="btn-tool btn-tool-gold" title="Prikaži samo Top 30 po bodovima">
+                <span>🏆 Top 30</span>
+              </button>
+              <button id="btnTop50" class="btn-tool btn-tool-gold" title="Prikaži samo Top 50 po bodovima">
+                <span>🏆 Top 50</span>
+              </button>
+              <button id="btnPointsGt0" class="btn-tool btn-tool-gold" title="Prikaži sve majice koje imaju barem 1 bod (≥ 1 PTS)">
+                <span>★ ≥ 1 PTS</span>
+              </button>
+              <button id="btnResetFilters" class="btn-tool" title="Poništi sve filtere i pretragu">
+                <span>✕ Poništi filtere</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <main class="gallery-container">
+          <div id="galleryGrid" class="gallery-grid">
+            <!-- Rendered dynamically by js/app.js -->
+          </div>
+        </main>
+
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 2: STEP-BY-STEP EDITOR WORKSPACE                             -->
+      <!-- ================================================================= -->
+      <section id="viewEditor" class="view-panel editor-view">
+        
+        <!-- Left / Center Canvas Pane -->
+        <div class="canvas-pane">
+          
+          <!-- Big Step Navigation Buttons Bar -->
+          <div class="canvas-tabbar">
+            <div class="canvas-tabs">
+              <button class="step-pill active" data-step="1" data-mode="original" title="Korak 1: Izvorni predložak">
+                <span class="step-num">01</span>
+                <span class="step-text-wrap">
+                  <span class="step-title">ORIGINAL</span>
+                  <span class="step-sub">IZVORNO</span>
+                </span>
+              </button>
+
+              <button class="step-pill" data-step="2" data-mode="ai_cleaned" title="Korak 2: AI Izolacija & Upscale">
+                <span class="step-num">02</span>
+                <span class="step-text-wrap">
+                  <span class="step-title">AI ČIŠĆENJE</span>
+                  <span class="step-sub">GEMINI/GPT</span>
+                </span>
+              </button>
+
+              <button class="step-pill" data-step="3" data-mode="dtf_alpha" title="Korak 3: Zero-Halo DTF Alpha maskiranje">
+                <span class="step-num">03</span>
+                <span class="step-text-wrap">
+                  <span class="step-title">DTF ALPHA</span>
+                  <span class="step-sub">ZERO-HALO</span>
+                </span>
+              </button>
+
+              <button class="step-pill" data-step="4" data-mode="layer_psd" title="Korak 4: Ming Image 0.1 segmentacija slojeva i Photoshop PSD">
+                <span class="step-num">04</span>
+                <span class="step-text-wrap">
+                  <span class="step-title">SLOJEVI PSD</span>
+                  <span class="step-sub">MING 0.1</span>
+                </span>
+              </button>
+
+              <button class="step-pill" data-step="5" data-mode="vector_svg" title="Korak 5: Bézier vektorski slojevi">
+                <span class="step-num">05</span>
+                <span class="step-text-wrap">
+                  <span class="step-title">VEKTOR SVG</span>
+                  <span class="step-sub">BÉZIER</span>
+                </span>
+              </button>
+
+              <button class="step-pill" data-step="6" data-mode="split_compare" title="Korak 6: Usporedba faza">
+                <span class="step-num">06</span>
+                <span class="step-text-wrap">
+                  <span class="step-title">USPOREDBA</span>
+                  <span class="step-sub">A/B SLIDER</span>
+                </span>
+              </button>
+
+              <button class="step-pill" data-step="7" data-mode="mockup" title="Korak 7: Prikaz na majici i izvoz">
+                <span class="step-num">07</span>
+                <span class="step-text-wrap">
+                  <span class="step-title">MOCKUP & IZVOZ</span>
+                  <span class="step-sub">PROIZVODNJA</span>
+                </span>
+              </button>
+            </div>
+
+            <!-- Quick Design Switcher -->
+            <div class="design-nav-quick">
+              <button id="btnPrevDesign" class="btn-nav-arrow" title="Prethodni dizajn (Lijeva strelica ←)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <span id="curTitleBadge" class="cur-title-badge">Učitavanje...</span>
+              <button id="btnNextDesign" class="btn-nav-arrow" title="Sljedeći dizajn (Desna strelica →)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <button id="btnTogglePanel" class="btn-toggle-panel" title="Sakrij / Prikaži panel postavki">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                  <line x1="15" y1="3" x2="15" y2="21"></line>
+                </svg>
+                <span>POSTAVKE</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Canvas Viewport -->
+          <div id="canvasViewport" class="canvas-viewport">
+            
+            <!-- Central Loading & Progress Overlay HUD -->
+            <div id="canvasLoadingOverlay" class="canvas-overlay">
+              <div class="overlay-radar">
+                <div class="radar-ring"></div>
+                <div class="radar-ring-inner"></div>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color:var(--accent-gold-bright);">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                </svg>
+              </div>
+              <div class="overlay-text-group">
+                <span id="overlayStepBadge" class="overlay-step-badge">OBRADA</span>
+                <h3 id="overlayTitle" class="overlay-title">Priprema DTF Alphe...</h3>
+                <p id="overlaySubtitle" class="overlay-sub">
+                  <span>Proteklo vrijeme: </span>
+                  <strong id="overlayTimerText" class="overlay-timer">0.0s</strong>
+                </p>
+              </div>
+            </div>
+
+            <!-- Artboard Stage -->
+            <div id="artboardStage" class="artboard-stage">
+              <!-- Main raster image display -->
+              <img id="mainArtboardImg" class="artboard-img" src="" alt="Artboard">
+
+              <!-- Live 60 FPS DTF Canvas for instant real-time slider updates -->
+              <canvas id="liveDtfCanvas" class="artboard-img" style="display:none; width:100%; height:100%; object-fit:contain;"></canvas>
+
+              <!-- Ming 0.1 Design Layers render container -->
+              <div id="layersRenderContainer" class="layers-render-container" style="display:none; width:100%; height:100%; position:absolute; top:0; left:0; pointer-events:none;"></div>
+
+              <!-- SVG vector render container -->
+              <div id="svgRenderContainer" style="display:none; width:100%; height:100%;"></div>
+
+              <!-- Side-by-Side Dual Container -->
+              <div id="sideBySideContainer" class="side-by-side-stage" style="display:none;">
+                <div class="side-plate plate-left">
+                  <span class="plate-tag" id="plateLeftTag">ORIGINAL</span>
+                  <img id="imgSideLeft" src="" alt="Left Plate">
+                </div>
+                <div class="side-plate plate-right">
+                  <span class="plate-tag" id="plateRightTag">AI GENERACIJA</span>
+                  <img id="imgSideRight" src="" alt="Right Plate">
+                </div>
+              </div>
+
+              <!-- Onion Skin / Diff Overlay Image -->
+              <img id="onionOverlayImg" class="artboard-img onion-overlay" src="" alt="Onion Overlay" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; pointer-events:none;">
+
+              <!-- Split Comparison Slider Wrapper (Full Resolution Zero-Distortion Clip-Path Engine) -->
+              <div id="splitCompareWrapper" class="split-wrapper" style="display:none;">
+                <img id="splitImgAfter" class="split-img split-after" src="" alt="After">
+                <div id="splitBefore" class="split-before">
+                  <img id="splitImgBefore" class="split-img split-before-img" src="" alt="Before">
+                </div>
+                <div id="splitDivider" class="split-divider">
+                  <div id="splitHandle" class="split-handle" title="Povuci za A/B usporedbu">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="8 18 2 12 8 6"></polyline>
+                      <polyline points="16 6 22 12 16 18"></polyline>
+                    </svg>
+                  </div>
+                </div>
+                <div class="split-tag tag-a" id="splitTagA">00 · ORIGINAL</div>
+                <div class="split-tag tag-b" id="splitTagB">AI VERZIJA</div>
+              </div>
+            </div>
+
+            <!-- Floating Photoshop-Style Layers Palette HUD (Visible in Step 04) -->
+            <div id="floatingLayersPalette" class="floating-layers-palette" style="display:none;">
+              <div class="palette-header">
+                <div class="palette-title-group">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                  </svg>
+                  <span>PHOTOSHOP SLOJEVI</span>
+                  <span id="paletteCountBadge" class="palette-badge">0</span>
+                </div>
+                <div class="palette-quick-actions">
+                  <button id="btnPaletteShowAll" class="palette-mini-btn" title="Prikaži sve slojeve">SVI</button>
+                  <button id="btnPaletteHideAll" class="palette-mini-btn" title="Sakrij sve slojeve">SAKRIJ</button>
+                </div>
+              </div>
+              <div id="paletteLayersList" class="palette-layers-list"></div>
+            </div>
+
+            <!-- Floating Zoom HUD -->
+            <div class="zoom-hud">
+              <button id="btnZoomOut" class="zoom-btn" title="Smanji (−)">−</button>
+              <span id="labelZoomLevel" class="zoom-level">100%</span>
+              <button id="btnZoomIn" class="zoom-btn" title="Povećaj (+)">+</button>
+              <button id="btnZoomFit" class="zoom-btn" title="Uklopi na ekran (F)">UKLOPI</button>
+              <button id="btnZoom100" class="zoom-btn" title="Stvarna veličina 1:1 (0)">1:1</button>
+            </div>
+
+            <!-- Subtle Image Telemetry (Bottom Corner) -->
+            <div id="imageTelemetryHud" class="image-telemetry-hud" title="Stvarni podaci o slici">
+              <span id="hudFilenameText" class="hud-filename">Učitavanje...</span>
+              <span class="hud-sep">·</span>
+              <span id="hudResolutionBadge" class="hud-res">1664 × 2048 px</span>
+            </div>
+          </div>
+
+          <!-- Interactive AI Generations Filmstrip / Timeline Reel -->
+          <div id="generationsFilmstripBar" class="generations-filmstrip-bar">
+            
+            <!-- Reel Header Toolbar -->
+            <div class="reel-header-bar">
+              <div class="reel-title-group">
+                <span class="reel-sigil">🎞️</span>
+                <span class="reel-title">TRAKA GENERACIJA</span>
+                <span id="reelBadgeCount" class="reel-badge">0 AI verzija</span>
+                <span id="reelActiveBadge" class="reel-active-pill">BAZA: ORIGINAL</span>
+              </div>
+
+              <!-- Quick Compare & Mode Toggles -->
+              <div class="reel-actions-group">
+                <button id="btnHoldOriginal" class="reel-tool-btn btn-flicker-hold" title="Drži pritisnuto za trenutni brzi prikaz Originala (Space tipka)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <span>DRŽI ZA ORIGINAL</span>
+                </button>
+
+                <button id="btnQuickCompare" class="reel-tool-btn btn-quick-compare" title="Pokreni interaktivnu A/B usporedbu s originalom">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="2" y="3" width="20" height="18" rx="2"></rect>
+                    <line x1="12" y1="3" x2="12" y2="21"></line>
+                  </svg>
+                  <span>USPOREDI A/B</span>
+                </button>
+
+                <!-- Comparison Visual Modes Switcher (visible during compare) -->
+                <div id="compareModeGroup" class="compare-mode-pills" style="display:none;">
+                  <button class="compare-mode-btn active" data-comparemode="split" title="Split klizač">A|B SPLIT</button>
+                  <button class="compare-mode-btn" data-comparemode="side_by_side" title="Dvostruki prikaz jedan pored drugog">DVOSTRUKO</button>
+                  <button class="compare-mode-btn" data-comparemode="onion" title="Onion-skin prozirnost">ONION SKIN</button>
+                  <button class="compare-mode-btn" data-comparemode="diff" title="Diff / Razlika">RAZLIKA</button>
+                </div>
+
+                <div id="onionSkinWrap" class="onion-slider-wrap" style="display:none;">
+                  <span style="font-size:0.64rem; color:var(--text-muted); font-family:var(--font-mono);">PROZIRNOST:</span>
+                  <input type="range" id="sliderOnionSkin" min="0" max="100" value="50" style="width:70px; height:4px; accent-color:var(--accent-gold-bright);">
+                  <span id="valOnionSkin" style="font-size:0.65rem; color:var(--accent-gold-bright); font-family:var(--font-mono); font-weight:800;">50%</span>
+                </div>
+
+                <button id="btnNewGenPrompt" class="reel-tool-btn btn-tool-gold" title="Nova AI generacija">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                  </svg>
+                  <span>NOVA GENERACIJA</span>
+                </button>
+
+                <button id="btnToggleReel" class="reel-collapse-btn" title="Sakrij / Prikaži traku generacija">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Scrollable Filmstrip Track -->
+            <div id="generationsTrack" class="generations-track">
+              <!-- Rendered dynamically by js/generations.js -->
+            </div>
+
+          </div>
+
+          <!-- Bottom Garment Color Swatches Bar -->
+          <div class="garment-toolbar">
+            <div class="garment-swatches-group">
+              <span class="swatch-label">PODLOGA MAJICE:</span>
+              <div class="swatches-list">
+                <button class="color-swatch active" data-color="#171E19" style="background:#171E19;" title="Studio Green-Black (#171E19)"></button>
+                <button class="color-swatch" data-color="#000000" style="background:#000000;" title="Pitch Black (#000000)"></button>
+                <button class="color-swatch" data-color="#FFFFFF" style="background:#FFFFFF;" title="Optical White (#FFFFFF)"></button>
+                <button class="color-swatch" data-color="#F5EFE3" style="background:#F5EFE3;" title="Warm Bone / Raw Ecru (#F5EFE3)"></button>
+                <button class="color-swatch" data-color="#2A2E2C" style="background:#2A2E2C;" title="Washed Charcoal (#2A2E2C)"></button>
+                <button class="color-swatch" data-color="#E3D8C8" style="background:#E3D8C8;" title="Vintage Sand (#E3D8C8)"></button>
+                <button class="color-swatch" data-color="#42493E" style="background:#42493E;" title="Muted Moss Sage (#42493E)"></button>
+                <button class="color-swatch" data-color="#8B1E1E" style="background:#8B1E1E;" title="Cadmium Red (#8B1E1E)"></button>
+                <button class="color-swatch checker" data-color="checker" title="Transparentna mrežica (Checkerboard)"></button>
+                
+                <div class="custom-picker-wrap" style="position:relative;">
+                  <input type="color" id="customGarmentColor" value="#171E19">
+                  <div class="custom-picker-btn" title="Prilagođena boja">+</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="garment-toggles">
+              <label class="switch-toggle" title="Uključi realističnu teksturu pamučne tkanine">
+                <input type="checkbox" id="chkGarmentTexture">
+                <span>Tekstura pamuka</span>
+              </label>
+              <label class="switch-toggle" title="Automatski pretvori svijetlu tintu u tamnu za svijetle majice">
+                <input type="checkbox" id="chkInvertInk">
+                <span>Invertiraj za bijele majice</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Draggable Resizer Bar -->
+        <div id="panelResizer" class="panel-resizer" title="Povuci za promjenu širine panela">
+          <div class="resizer-handle-pill"></div>
+        </div>
+
+        <!-- Right Step-by-Step Inspector Sidebar -->
+        <div id="inspectorPane" class="inspector-pane">
+          
+          <!-- Inspector Header -->
+          <div class="inspector-header">
+            <span id="curStepBadge" class="step-indicator-tag">KORAK 01 · IZVORNI PREDLOŽAK</span>
+            <h2 id="editorDesignTitle" class="step-title-hero">Naziv Dizajna</h2>
+            <div class="inspector-meta-row">
+              <span id="editorRankBadge" class="brand-badge" style="background:var(--accent-gold); color:#0c100e;">#1</span>
+              <span id="editorCategoryBadge" class="brand-badge">Artwear</span>
+              <span id="editorResBadge" class="brand-badge" style="background:var(--bg-card-elevated); color:var(--accent-gold-bright);">1664 × 2048 px · Master</span>
+            </div>
+          </div>
+
+          <!-- Step Settings Container (Only active step is visible) -->
+          <div class="inspector-scroll">
+            
+            <!-- ============================================================= -->
+            <!-- STEP 1 PANEL: ORIGINAL SOURCE & ANALYSIS                      -->
+            <!-- ============================================================= -->
+            <div id="stepPanel1" class="step-settings-panel active">
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <span>Izvorni Podaci Predloška</span>
+                  </div>
+                  <span class="card-header-badge">MASTER</span>
+                </div>
+                <div class="card-body-content">
+                  <div class="qa-metrics-grid">
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Izvorna Rezolucija</span>
+                      <span id="p1MetricRes" class="qa-metric-value" style="color:var(--accent-gold-bright);">1664 × 2048</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Omjer Stranica</span>
+                      <span class="qa-metric-value">4 : 5 (Portret)</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Format Boja</span>
+                      <span class="qa-metric-value">RGB 8-Bit</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">DTF Spremnost</span>
+                      <span class="qa-metric-value" style="color:var(--accent-green-bright);">Spremno za separaciju</span>
+                    </div>
+                  </div>
+
+                  <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
+                    Ovo je izvorni visoko-rezolucijski master predložak. U sljedećim koracima možete pokrenuti AI čišćenje pozadine, DTF Alpha separaciju ili izravnu Bézier vektorizaciju.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Quick Next Step Footer -->
+              <div class="step-nav-footer">
+                <button class="btn-step-action btn-step-primary" data-goto-step="2">
+                  <span>NASTAVI NA KORAK 02: AI ČIŠĆENJE</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+                <button class="btn-step-action btn-step-gold" data-goto-step="3">
+                  <span>PRESKOČI DIREKTNO NA DTF ALPHU</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="13 17 18 12 13 7"></polyline>
+                    <polyline points="6 17 11 12 6 7"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- STEP 2 PANEL: AI ISOLATION, FULL-SCREEN & 4K UPSCALE          -->
+            <!-- ============================================================= -->
+            <div id="stepPanel2" class="step-settings-panel">
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    </svg>
+                    <span>AI Izolacija, Full-Screen & 4K Upscale</span>
+                  </div>
+                  <span id="aiEngineBadge" class="card-header-badge">NANO BANANA PRO · 4K</span>
+                </div>
+                <div class="card-body-content">
+                  
+                  <!-- Model Engine Selector -->
+                  <div class="field-group">
+                    <label class="field-label"><span>Model Engine:</span></label>
+                    <select id="modelSelect" class="sort-select" style="width:100%;">
+                      <option value="nano-banana-pro" selected>🍌 Nano Banana Pro (Google Gemini 3 Pro Image)</option>
+                      <option value="nano-banana-2">🍌 Nano Banana 2 (Google Gemini 3.1 Flash Image)</option>
+                      <option value="gpt-image-2.5-flare">🤖 GPT Image 2.5 Flare (OpenAI T-Shirt Master)</option>
+                      <option value="gpt-image-2">🤖 GPT Image 2 (OpenAI Standard)</option>
+                    </select>
+                  </div>
+
+                  <!-- Resolution Selector -->
+                  <div class="field-group">
+                    <label class="field-label">
+                      <span>Izlazna Rezolucija (Upscale):</span>
+                      <span id="resDescBadge" style="font-size:0.68rem; color:var(--accent-gold-bright);">4096 px</span>
+                    </label>
+                    <select id="resolutionSelect" class="sort-select" style="width:100%;">
+                      <option value="2k">2K Master (2048 px · Standard za DTF tisak)</option>
+                      <option value="4k" selected>4K Ultra HD (4096 px · Maksimalna gustoća piksela po detalju)</option>
+                    </select>
+                  </div>
+
+                  <!-- Full-Screen Framing & Tight-Crop Switches -->
+                  <div class="field-group">
+                    <label class="field-label"><span>Kadriranje i Skaliranje Motiva:</span></label>
+                    <div style="display:flex; flex-direction:column; gap:8px; background:var(--bg-card); padding:10px 12px; border:1.5px solid var(--border-dark); border-radius:var(--radius-xs);">
+                      
+                      <label class="switch-toggle" style="width:100%; justify-content:space-between;" title="Proširuje motiv preko cijelog formata (Edge-to-Edge) za maksimalnu gustoću piksela">
+                        <span style="display:flex; flex-direction:column; gap:2px; text-align:left;">
+                          <strong style="color:var(--accent-gold-bright); font-size:0.75rem;">⭐ Full-Screen (Edge-to-Edge kadar)</strong>
+                          <span style="font-size:0.64rem; color:var(--text-secondary); font-weight:600;">Dizajn popunjava cijeli prostor bez praznih rubova</span>
+                        </span>
+                        <input type="checkbox" id="chkFullScreen" checked>
+                      </label>
+
+                      <div style="height:1px; background:var(--border-dark); margin:2px 0;"></div>
+
+                      <label class="switch-toggle" style="width:100%; justify-content:space-between;" title="Automatski prepoznaje tiskovni motiv i obrezuje prazne rubove majice prije slanja u AI">
+                        <span style="display:flex; flex-direction:column; gap:2px; text-align:left;">
+                          <strong style="color:var(--text-primary); font-size:0.75rem;">📐 Auto Tight-Crop predloška</strong>
+                          <span style="font-size:0.64rem; color:var(--text-secondary); font-weight:600;">Uklanja prazne vanjske margine radi maksimalnog zooma</span>
+                        </span>
+                        <input type="checkbox" id="chkTightCrop" checked>
+                      </label>
+
+                    </div>
+                  </div>
+
+                  <!-- Prompt Textarea -->
+                  <div class="field-group">
+                    <label class="field-label">
+                      <span>Prompt za Izolaciju i Pozadinu:</span>
+                      <span style="font-size:0.68rem; color:var(--text-muted);">Zadržava identičan dizajn</span>
+                    </label>
+                    <textarea id="promptInput" class="prompt-textarea" style="min-height:95px;" placeholder="Unesite prompt za izolaciju i kadriranje..."></textarea>
+                  </div>
+
+                  <!-- Prompt Presets -->
+                  <div class="field-group">
+                    <label class="field-label"><span>Predlošci Prompta:</span></label>
+                    <div id="presetChips" class="preset-chips"></div>
+                  </div>
+
+                  <!-- Action Button -->
+                  <button id="btnRunAI" class="btn-step-action btn-step-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>POKRENI NANO BANANA PRO (4K FULL-SCREEN)</span>
+                  </button>
+
+                  <div id="aiStatusBanner" style="display:none; padding:10px 12px; border-radius:var(--radius-xs); font-size:0.75rem; background:var(--accent-gold-bg); border:1.5px solid var(--accent-gold-border); color:var(--accent-gold-bright); align-items:center; gap:8px;"></div>
+
+                  <!-- Multi-Version History Card in Step 2 -->
+                  <div class="settings-card" style="margin-top:14px;">
+                    <div class="card-header-bar">
+                      <div class="card-header-title">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                        <span>Kronologija i Popis Svih Verzija</span>
+                      </div>
+                      <span id="step2GenCountBadge" class="card-header-badge">1 VERZIJA</span>
+                    </div>
+                    <div class="card-body-content">
+                      <div id="step2GenerationsList" class="history-list-wrap">
+                        <!-- Populated by js/generations.js -->
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Step Nav Footer -->
+              <div class="step-nav-footer">
+                <button class="btn-step-action btn-step-gold" data-goto-step="3">
+                  <span>KORISTI OVAJ REZULTAT ZA DTF ALPHU</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+                <button class="btn-step-action btn-step-secondary" data-goto-step="1">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span>NATRAG NA KORAK 01: ORIGINAL</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- STEP 3 PANEL: ENHANCED DTF ALPHA SEPARATION                   -->
+            <!-- ============================================================= -->
+            <div id="stepPanel3" class="step-settings-panel">
+              
+              <!-- Extraction Mode & Source -->
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span>Izvor & Metoda Izdvajanja</span>
+                  </div>
+                  <span class="card-header-badge">DTF ENGINE</span>
+                </div>
+                <div class="card-body-content">
+                  
+                  <div class="field-group">
+                    <label class="field-label"><span>Izvorna Slika za DTF Masku:</span></label>
+                    <div class="mode-switch-group">
+                      <button id="btnDtfSrcAI" class="mode-switch-btn active" data-src="ai">AI Očišćeno (GPT 2.5)</button>
+                      <button id="btnDtfSrcOrig" class="mode-switch-btn" data-src="original">Izvorni Original</button>
+                    </div>
+                  </div>
+
+                  <div class="field-group">
+                    <label class="field-label"><span>Način Detekcije Pozadine:</span></label>
+                    <select id="selectDtfMethod" class="sort-select" style="width:100%;">
+                      <option value="auto" selected>Auto Smart Keying (Analiza Perimetra)</option>
+                      <option value="dark_bg">Crna / Tamna pozadina (Čuva zlatne i svijetle pigmente)</option>
+                      <option value="light_bg">Bijela / Svijetla pozadina (Čuva tamnu tintu)</option>
+                      <option value="custom_color">Prilagođena boja (Hex / Pipeta)</option>
+                      <option value="refine_alpha">Rafiniranje postojeće Alpha maske</option>
+                    </select>
+                  </div>
+
+                  <div id="customBgWrap" class="field-group" style="display:none;">
+                    <label class="field-label"><span>Boja Pozadine za Uklanjanje:</span></label>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                      <input type="color" id="dtfCustomColorPicker" value="#171E19" style="width:36px; height:32px; border:1.5px solid var(--border-dark); border-radius:var(--radius-xs); cursor:pointer;">
+                      <input type="text" id="dtfCustomHexInput" value="#171E19" class="sort-select" style="flex:1;">
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- DTF Fine-Tuning Sliders -->
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <line x1="4" y1="21" x2="4" y2="14"></line>
+                      <line x1="4" y1="10" x2="4" y2="3"></line>
+                      <line x1="12" y1="21" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12" y2="3"></line>
+                      <line x1="20" y1="21" x2="20" y2="16"></line>
+                      <line x1="20" y1="12" x2="20" y2="3"></line>
+                      <line x1="1" y1="14" x2="7" y2="14"></line>
+                      <line x1="9" y1="8" x2="15" y2="8"></line>
+                      <line x1="17" y1="16" x2="23" y2="16"></line>
+                    </svg>
+                    <span>Finetuning Klizači (Zero-Halo Master)</span>
+                  </div>
+                  <span class="card-header-badge">PRECISION</span>
+                </div>
+                <div class="card-body-content">
+                  
+                  <!-- Sensitivity Threshold -->
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>1. Osjetljivost praga (Sensitivity):</span>
+                      <span id="valDtfThreshold" class="val">24</span>
+                    </div>
+                    <input type="range" id="sliderDtfThreshold" class="slider-control" min="5" max="90" value="24">
+                  </div>
+
+                  <!-- Feather / Smooth Edge -->
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>2. Mekoća ruba (Feather / Anti-Alias):</span>
+                      <span id="valDtfFeather" class="val">1.5 px</span>
+                    </div>
+                    <input type="range" id="sliderDtfFeather" class="slider-control" min="0" max="8.0" step="0.5" value="1.5">
+                  </div>
+
+                  <!-- Alpha Choke -->
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>3. Uvlačenje podloge (Alpha Choke):</span>
+                      <span id="valDtfChoke" class="val">0 px</span>
+                    </div>
+                    <input type="range" id="sliderDtfChoke" class="slider-control" min="0" max="3" value="0" title="Za tanki tekst i barkodove držati na 0 px">
+                  </div>
+
+                  <!-- Defringe Decontamination -->
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>4. Uklanjanje obojenog ruba (Defringe):</span>
+                      <span id="valDtfDefringe" class="val">75%</span>
+                    </div>
+                    <input type="range" id="sliderDtfDefringe" class="slider-control" min="0" max="100" step="5" value="75">
+                  </div>
+
+                  <!-- Despeckle -->
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>5. Čišćenje šuma i točkica (Despeckle):</span>
+                      <span id="valDtfDespeckle" class="val">4 px</span>
+                    </div>
+                    <input type="range" id="sliderDtfDespeckle" class="slider-control" min="0" max="30" value="4">
+                  </div>
+
+                  <!-- Solid Boost -->
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>6. Gustoća tinte unutrašnjosti (Solid Boost):</span>
+                      <span id="valDtfSolid" class="val">1.4x</span>
+                    </div>
+                    <input type="range" id="sliderDtfSolid" class="slider-control" min="1.0" max="2.5" step="0.1" value="1.4">
+                  </div>
+
+                  <!-- Toggles -->
+                  <div style="display:flex; flex-direction:column; gap:8px; padding-top:4px;">
+                    <label class="switch-toggle">
+                      <input type="checkbox" id="chkDtfProtectLines" checked>
+                      <span>Zaštita unutrašnjih crnih linija i teksta</span>
+                    </label>
+                    <label class="switch-toggle">
+                      <input type="checkbox" id="chkDtfInvertInk">
+                      <span>Invertiraj za bijele/svijetle majice</span>
+                    </label>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- DTF Presets & Actions -->
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>Brzi Tiskarski Preseti</span>
+                  </div>
+                </div>
+                <div class="card-body-content">
+                  <div class="preset-chips">
+                    <button class="chip-btn active" data-dtfpreset="gold_on_black">Zlatni vez na crnom</button>
+                    <button class="chip-btn" data-dtfpreset="zero_halo">Zero-Halo DTF Master</button>
+                    <button class="chip-btn" data-dtfpreset="soft_gradient">Meki prijelazi & Sjene</button>
+                    <button class="chip-btn" data-dtfpreset="dark_on_white">Tamna tinta na bijelom</button>
+                  </div>
+
+                  <button id="btnRunDtfAlpha" class="btn-step-action btn-step-primary" style="margin-top:6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>⚡ PRIMIJENI I OSVJEŽI DTF ALPHU</span>
+                  </button>
+
+                  <button id="btnDownloadLiveDtf" class="btn-step-action" style="margin-top:8px; background: rgba(208, 160, 65, 0.15); border: 1.5px solid var(--accent-gold); color: var(--accent-gold-bright); font-weight: 700; width: 100%; justify-content: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>⬇️ PREUZMI TOČAN DTF IZ PRIKAZA (LIVE PNG)</span>
+                  </button>
+
+                  <!-- Live QA Telemetry Card -->
+                  <div class="qa-metrics-grid" style="margin-top:6px;">
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Pokrivenost Alphe</span>
+                      <span id="dtfCovMetric" class="qa-metric-value">--%</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Zero-Halo Ocjena</span>
+                      <span id="dtfHaloMetric" class="qa-metric-value" style="color:var(--accent-green-bright);">99.8% Čisto</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Detektirana Pozadina</span>
+                      <span id="dtfBgMetric" class="qa-metric-value" style="font-size:0.75rem;">#171E19</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Vrijeme Obrade</span>
+                      <span id="dtfTimeMetric" class="qa-metric-value" style="color:var(--accent-gold-bright);">0.0s</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Step Nav Footer -->
+              <div class="step-nav-footer">
+                <button class="btn-step-action btn-step-gold" data-goto-step="4">
+                  <span>NASTAVI NA KORAK 04: SLOJEVI PSD</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+                <button class="btn-step-action btn-step-secondary" data-goto-step="2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span>NATRAG NA KORAK 02: AI ČIŠĆENJE</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- STEP 4 PANEL: MING IMAGE 0.1 DESIGN LAYERS & PHOTOSHOP PSD   -->
+            <!-- ============================================================= -->
+            <div id="stepPanel4" class="step-settings-panel">
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                      <polyline points="2 17 12 22 22 17"></polyline>
+                      <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    <span>Ming Image 0.1 Segmentacija Slojeva</span>
+                  </div>
+                  <span class="card-header-badge" style="background:var(--accent-gold-bg); border-color:var(--accent-gold-border); color:var(--accent-gold-bright);">OPENROUTER · MING 0.1</span>
+                </div>
+                <div class="card-body-content">
+                  
+                  <!-- Source Image Selector -->
+                  <div class="field-group">
+                    <label class="field-label"><span>Izvorna Slika za Segmentaciju:</span></label>
+                    <div class="mode-switch-group">
+                      <button id="btnLayerSrcDTF" class="mode-switch-btn active" data-src="dtf">DTF Alpha (Preporučeno)</button>
+                      <button id="btnLayerSrcAI" class="mode-switch-btn" data-src="ai">AI Očišćeno</button>
+                      <button id="btnLayerSrcOrig" class="mode-switch-btn" data-src="original">Izvorni Original</button>
+                    </div>
+                  </div>
+
+                  <!-- Prompt Presets -->
+                  <div class="field-group">
+                    <label class="field-label"><span>Predlošci Segmentacije:</span></label>
+                    <div id="layerPresetChips" class="preset-chips">
+                      <!-- Populated dynamically by layer_controls.js -->
+                    </div>
+                  </div>
+
+                  <!-- Prompt Textarea -->
+                  <div class="field-group">
+                    <label class="field-label">
+                      <span>Prompt Upute za Slojeve (OpenRouter):</span>
+                      <span style="font-size:0.68rem; color:var(--text-muted);">Definira logičke cjeline</span>
+                    </label>
+                    <textarea id="layerPromptInput" class="prompt-textarea" style="min-height:85px;" placeholder="Layer 1: Graphic, Layer 2: Typography, Layer 3: Background"></textarea>
+                  </div>
+
+                  <!-- Action Button -->
+                  <button id="btnRunLayerSegment" class="btn-step-action btn-step-primary" style="margin-top:2px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <span>⚡ POKRENI MING LAYER SEGMENTACIJU</span>
+                  </button>
+
+                  <div id="layerStatusBanner" style="display:none; padding:10px 12px; border-radius:var(--radius-xs); font-size:0.75rem; background:var(--accent-gold-bg); border:1.5px solid var(--accent-gold-border); color:var(--accent-gold-bright); align-items:center; gap:8px; margin-top:8px;"></div>
+
+                </div>
+              </div>
+
+              <!-- Layer Stack & Export Card -->
+              <div class="settings-card" style="margin-top:14px;">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                      <path d="M3 9h18"></path>
+                      <path d="M3 15h18"></path>
+                    </svg>
+                    <span>Stog Slojeva (Layer Stack)</span>
+                  </div>
+                  <span id="layerCountBadge" class="card-header-badge">0 SLOJEVA</span>
+                </div>
+                <div class="card-body-content">
+                  
+                  <!-- Interactive Layer List Container -->
+                  <div id="layersListContainer" class="layers-box" style="max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
+                    <div style="color:var(--text-muted); font-size:0.75rem; padding:12px; text-align:center; font-style:italic;">
+                      Pokrenite segmentaciju iznad za generiranje transparentnih RGBA slojeva i Photoshop PSD-a.
+                    </div>
+                  </div>
+
+                  <!-- Download Buttons -->
+                  <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+                    <button id="btnDownloadPSD" class="btn-step-action btn-step-gold" style="justify-content:center;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      <span>📁 PREUZMI MULTI-LAYER PHOTOSHOP (.PSD)</span>
+                    </button>
+
+                    <button id="btnDownloadLayersZip" class="btn-secondary" style="width:100%; justify-content:center;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                        <rect x="1" y="3" width="22" height="5"></rect>
+                        <line x1="10" y1="12" x2="14" y2="12"></line>
+                      </svg>
+                      <span>📦 PREUZMI SVE SLOJEVE (.ZIP)</span>
+                    </button>
+                  </div>
+
+                  <!-- Live Telemetry Card -->
+                  <div class="qa-metrics-grid" style="margin-top:12px;">
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Broj Slojeva</span>
+                      <span id="layerMetricCount" class="qa-metric-value">--</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">PSD Veličina</span>
+                      <span id="layerMetricPsdSize" class="qa-metric-value" style="color:var(--accent-gold-bright);">-- MB</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Format Slojeva</span>
+                      <span class="qa-metric-value" style="color:var(--accent-green-bright);">RGBA 8-Bit</span>
+                    </div>
+                    <div class="qa-metric-card">
+                      <span class="qa-metric-title">Vrijeme Obrade</span>
+                      <span id="layerMetricTime" class="qa-metric-value">0.0s</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Step Nav Footer -->
+              <div class="step-nav-footer">
+                <button class="btn-step-action btn-step-gold" data-goto-step="5">
+                  <span>NASTAVI NA KORAK 05: VEKTORIZACIJU</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+                <button class="btn-step-action btn-step-secondary" data-goto-step="3">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span>NATRAG NA KORAK 03: DTF ALPHA</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- STEP 5 PANEL: VECTORIZATION & SVG LAYERS                      -->
+            <!-- ============================================================= -->
+            <div id="stepPanel5" class="step-settings-panel">
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                      <polyline points="2 17 12 22 22 17"></polyline>
+                      <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    <span>Vektorizacija (Koristi DTF Alpha Mrežicu)</span>
+                  </div>
+                  <span class="card-header-badge">SVG BÉZIER</span>
+                </div>
+                <div class="card-body-content">
+                  
+                  <!-- Engine Selector -->
+                  <div class="field-group">
+                    <label class="field-label"><span>Vektorski Engine:</span></label>
+                    <div style="display:flex; gap:12px; font-size:0.76rem;">
+                      <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="radio" name="vecEngine" value="vtracer" checked>
+                        <span>vtracer (Višebojni Bézier)</span>
+                      </label>
+                      <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="radio" name="vecEngine" value="potrace">
+                        <span>potrace (Dual-Plate)</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Sliders -->
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>Broj boja / Kvantizacija:</span>
+                      <span id="valColors" class="val">8 b.</span>
+                    </div>
+                    <input type="range" id="sliderColors" class="slider-control" min="2" max="16" value="8">
+                  </div>
+
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>Oštrina kuteva (Corner Sharpness):</span>
+                      <span id="valCorner" class="val">30°</span>
+                    </div>
+                    <input type="range" id="sliderCorner" class="slider-control" min="10" max="120" value="30">
+                  </div>
+
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>Glađenje krivulja (Spline Smoothing):</span>
+                      <span id="valSmooth" class="val">2.5</span>
+                    </div>
+                    <input type="range" id="sliderSmooth" class="slider-control" min="0.5" max="8.0" step="0.5" value="2.5">
+                  </div>
+
+                  <div class="field-group">
+                    <div class="field-label">
+                      <span>Filtriranje šuma (Despeckle Noise):</span>
+                      <span id="valSpeckle" class="val">2 px</span>
+                    </div>
+                    <input type="range" id="sliderSpeckle" class="slider-control" min="0" max="40" value="2">
+                  </div>
+
+                  <div class="field-group">
+                    <label class="field-label"><span>Ciljna Rezolucija Tiska:</span></label>
+                    <select id="selectDPI" class="sort-select" style="width:100%;">
+                      <option value="2048">2048 px (Standard DTF)</option>
+                      <option value="3000">3000 px (300 DPI Visoka rezolucija)</option>
+                      <option value="3840">3840 px (4K Sub-Pixel Master)</option>
+                    </select>
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <label class="switch-toggle">
+                      <input type="checkbox" id="chkAutoUpdate" checked>
+                      <span>Automatsko osvježavanje</span>
+                    </label>
+                    <button id="btnRunVectorize" class="btn-primary" style="padding:6px 12px;">OSVJEŽI VEKTOR</button>
+                  </div>
+
+                  <!-- Detected Layers & Vector Stack -->
+                  <div class="field-group" style="margin-top:10px;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                      <label class="field-label" style="margin-bottom:0;"><span>Detektirani slojevi boja u SVG-u:</span></label>
+                      <span id="vectorLayerCountBadge" class="card-header-badge" style="font-size:0.65rem; padding:2px 6px;">0 SLOJEVA</span>
+                    </div>
+
+                    <!-- Quick Action Toolbar -->
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:8px;">
+                      <div style="display:flex; gap:6px;">
+                        <button id="btnVectorShowAll" class="btn-micro" style="padding:3px 8px; font-size:0.68rem; font-family:var(--font-mono); background:var(--bg-card); border:1px solid var(--border-dark); border-radius:3px; color:var(--text-secondary); cursor:pointer;" title="Prikaži sve vektorske slojeve">
+                          👁️ Prikaži sve
+                        </button>
+                        <button id="btnVectorHideAll" class="btn-micro" style="padding:3px 8px; font-size:0.68rem; font-family:var(--font-mono); background:var(--bg-card); border:1px solid var(--border-dark); border-radius:3px; color:var(--text-secondary); cursor:pointer;" title="Sakrij sve vektorske slojeve">
+                          🚫 Sakrij sve
+                        </button>
+                      </div>
+                      <button id="btnVectorResetLayers" class="btn-micro" style="padding:3px 8px; font-size:0.68rem; font-family:var(--font-mono); background:var(--bg-card); border:1px solid var(--border-dark); border-radius:3px; color:var(--text-muted); cursor:pointer;" title="Vrati sve slojeve na početno stanje">
+                        ↺ Resetiraj
+                      </button>
+                    </div>
+
+                    <!-- Interactive Vector Layers Stack -->
+                    <div id="vectorLayersList" class="layers-box" style="max-height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;">
+                      <div class="layer-item" style="color:var(--text-muted); padding:8px;">Učitavanje slojeva...</div>
+                    </div>
+
+                    <!-- Direct SVG Download Button -->
+                    <button id="btnDownloadVectorSvg" class="btn-step-action btn-step-gold" style="width:100%; justify-content:center; margin-top:10px; display:none;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      <span>📐 PREUZMI PRILAGOĐENI VEKTORSKI (.SVG)</span>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Step Nav Footer -->
+              <div class="step-nav-footer">
+                <button class="btn-step-action btn-step-gold" data-goto-step="6">
+                  <span>PREGLEDAJ U KORAKU 06: USPOREDBA</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+                <button class="btn-step-action btn-step-secondary" data-goto-step="4">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span>NATRAG NA KORAK 04: SLOJEVI PSD</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- STEP 6 PANEL: SPLIT COMPARISON & QA                           -->
+            <!-- ============================================================= -->
+            <div id="stepPanel6" class="step-settings-panel">
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <rect x="2" y="3" width="20" height="18" rx="2"></rect>
+                      <line x1="12" y1="3" x2="12" y2="21"></line>
+                    </svg>
+                    <span>A-B Usporedba Faza</span>
+                  </div>
+                  <span class="card-header-badge">SPLIT SLIDER</span>
+                </div>
+                <div class="card-body-content">
+                  
+                  <div class="field-group">
+                    <label class="field-label"><span>Sloj A (Lijevo / Prije):</span></label>
+                    <select id="selectCompareBefore" class="sort-select" style="width:100%;">
+                      <option value="original" selected>1. Izvorni Original</option>
+                      <option value="ai_cleaned">2. AI Očišćeno (Gemini/GPT)</option>
+                      <option value="dtf_alpha">3. DTF Alpha Maska</option>
+                      <option value="layer_psd">4. Ming PSD Slojevi</option>
+                    </select>
+                  </div>
+
+                  <div class="field-group">
+                    <label class="field-label"><span>Sloj B (Desno / Poslije):</span></label>
+                    <select id="selectCompareAfter" class="sort-select" style="width:100%;">
+                      <option value="dtf_alpha">3. DTF Alpha Maska</option>
+                      <option value="layer_psd">4. Ming PSD Slojevi</option>
+                      <option value="vector_svg" selected>5. Vektor SVG</option>
+                      <option value="mockup">7. Mockup na Majici</option>
+                    </select>
+                  </div>
+
+                  <p style="font-size:0.75rem; color:var(--text-secondary); line-height:1.4;">
+                    Povucite zlatnu ručicu u središtu platna lijevo-desno za provjeru sub-pikselne točnosti, oštrine linija i eliminacije bijelih rubova.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Step Nav Footer -->
+              <div class="step-nav-footer">
+                <button class="btn-step-action btn-step-primary" data-goto-step="7">
+                  <span>ZAVRŠI NA KORAKU 07: MOCKUP & IZVOZ</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+                <button class="btn-step-action btn-step-secondary" data-goto-step="5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span>NATRAG NA KORAK 05: VEKTOR SVG</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- STEP 7 PANEL: MOCKUP & PRODUCTION EXPORT                      -->
+            <!-- ============================================================= -->
+            <div id="stepPanel7" class="step-settings-panel">
+              <div class="settings-card">
+                <div class="card-header-bar">
+                  <div class="card-header-title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <span>Preuzimanje Proizvodnih Paketa</span>
+                  </div>
+                  <span class="card-header-badge">300 DPI READY</span>
+                </div>
+                <div class="card-body-content">
+                  
+                  <button id="btnExportDTF" class="btn-secondary" style="width:100%; justify-content:flex-start;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    </svg>
+                    <span>Preuzmi DTF Master (300 DPI Transparent PNG)</span>
+                  </button>
+
+                  <button id="btnExportPSD" class="btn-secondary" style="width:100%; justify-content:flex-start;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                      <path d="M3 9h18"></path>
+                      <path d="M3 15h18"></path>
+                    </svg>
+                    <span>Preuzmi Multi-Layer Photoshop (.PSD Master)</span>
+                  </button>
+
+                  <button id="btnExportLayersZip" class="btn-secondary" style="width:100%; justify-content:flex-start;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polyline points="21 8 21 21 3 21 3 8"></polyline>
+                      <rect x="1" y="3" width="22" height="5"></rect>
+                      <line x1="10" y1="12" x2="14" y2="12"></line>
+                    </svg>
+                    <span>Preuzmi Sve Slojeve u ZIP paketu (.PNG Layers)</span>
+                  </button>
+
+                  <button id="btnExportSVG" class="btn-secondary" style="width:100%; justify-content:flex-start;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    </svg>
+                    <span>Preuzmi Modularni Vektorski SVG Master</span>
+                  </button>
+
+                  <button id="btnExportMockup" class="btn-secondary" style="width:100%; justify-content:flex-start;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path>
+                    </svg>
+                    <span>Generiraj i Preuzmi Mockup Majice (Proof)</span>
+                  </button>
+
+                  <button id="btnExportZip" class="btn-step-action btn-step-primary" style="margin-top:6px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="8 17 12 21 16 17"></polyline>
+                      <line x1="12" y1="12" x2="12" y2="21"></line>
+                      <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
+                    </svg>
+                    <span>📦 PREUZMI KOMPLETNI PROIZVODNI ZIP (.ZIP)</span>
+                  </button>
+
+                </div>
+              </div>
+
+              <!-- Step Nav Footer -->
+              <div class="step-nav-footer">
+                <button class="btn-step-action btn-step-secondary" data-goto-step="6">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                  <span>NATRAG NA KORAK 06: USPOREDBA</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Application Script Bundle -->
+  <script type="module" src="js/app.js?v=3.0.0"></script>
+</body>
+</html>
